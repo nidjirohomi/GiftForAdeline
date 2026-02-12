@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Сон Капибары Аделины</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Цветовая палитра */
+            --text-color: #ffffff;
+            --text-secondary: #e0e0e0;
+            --accent-color: #ffb7b2; /* Нежный персиковый */
+            --glass-bg: rgba(255, 255, 255, 0.12);
+            --glass-border: rgba(255, 255, 255, 0.25);
+            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            --btn-bg: rgba(255, 255, 255, 0.9);
+            --btn-text: #333;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text-color);
+            background-color: #1a1a1a; /* Fallback цвет */
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* --- ФОНОВОЕ ВИДЕО --- */
+        .video-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+        }
+
+        /* Оверлей для затемнения видео, чтобы текст читался */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0,0,0,0.3), rgba(0,0,0,0.6));
+            backdrop-filter: blur(3px); /* Легкий блюр фона */
+            -webkit-backdrop-filter: blur(3px);
+            z-index: -1;
+        }
+
+        /* --- СТЕКЛЯННАЯ ПАНЕЛЬ --- */
+        .card {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 30px 24px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px); /* Для iOS */
+            
+            /* Анимация дыхания */
+            animation: breathe 10s ease-in-out infinite;
+            transition: transform 0.3s ease;
+        }
+
+        /* --- КОНТЕНТ --- */
+        .capy-visual {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 15px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid rgba(255, 255, 255, 0);
+            background: rgba(0, 0, 0, 0);
+            /* Плавающая анимация */
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .capy-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        h1 {
+            font-size: clamp(1.4rem, 5vw, 1.8rem);
+            font-weight: 800;
+            margin-bottom: 12px;
+            line-height: 1.2;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .subtitle {
+            font-size: clamp(0.95rem, 4vw, 1.1rem);
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            line-height: 1.5;
+            font-weight: 600;
+        }
+
+        /* Блок со сном (изначально скрыт) */
+        .dream-container {
+            min-height: 0; /* Чтобы анимация работала корректно */
+            height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.5s ease;
+            margin-bottom: 0;
+        }
+        
+        .dream-container.active {
+            height: auto;
+            min-height: 140px; /* Резерв места под контент */
+            opacity: 1;
+            margin-bottom: 25px;
+            padding-top: 10px;
+        }
+
+        .dream-sticker {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 10px;
+            opacity: 0.9;
+        }
+        
+        .dream-sticker img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .dream-text {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            background: rgba(0,0,0,0.2);
+            padding: 12px 16px;
+            border-radius: 12px;
+            display: inline-block;
+            transition: opacity 0.2s ease;
+        }
+
+        /* --- КНОПКА --- */
+        .btn {
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.1s, background 0.2s, box-shadow 0.2s;
+            width: 100%;
+            max-width: 280px;
+            font-family: inherit;
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+            background: #ffffff;
+        }
+
+        .footer-note {
+            margin-top: 25px;
+            font-size: 0.75rem;
+            opacity: 0.6;
+            color: var(--text-secondary);
+        }
+
+        .add-to-home {
+            margin-top: 8px;
+            font-size: 0.7rem;
+            opacity: 0.4;
+        }
+
+        /* --- АНИМАЦИИ --- */
+        @keyframes breathe {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.015); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Утилита для скрытия элемента */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <video class="video-bg" autoplay muted loop playsinline>
+  <source src="./background/background.mp4" type="video/mp4">
+        </video>
+    <div class="overlay"></div>
+
+    <main class="card">
+        <div class="capy-visual">
+            <img src="./assets/zzz-sleeping.gif" alt="Спящая капибара">
+        </div>
+
+        <h1>Спящая капибара<br>Аделины</h1>
+        
+        <p class="subtitle">
+            Обычно она просто спит,<br>
+            но если Аделине нужно тепло -<br>она проснется
+        </p>
+
+        <div class="dream-container" id="dreamContainer">
+            <div class="dream-sticker">
+                <img src="./assets/my-melody.gif" alt="Dreaming" >
+            </div>
+            <div class="dream-text" id="dreamText">...</div>
+        </div>
+
+        <button class="btn" id="dreamBtn">Заглянуть в сон</button>
+
+        <div class="footer-note">
+            私を作った人はあなたと一緒にいたいです。
+            <div class="add-to-home"></div>
+        </div>
+    </main>
+
+    <script>
+        // --- КОНФИГУРАЦИЯ СНОВ ---
+        const dreams = [
+            "Ей снится, что хозяйка сегодня просто ахуенная.",
+            "Ей снится, что у тебя всё получится. Точно-точно.",
+            "Ей снится, что кто-то очень рад, что ты есть.",
+            "Ей снится вкусняшка, и она хочет поделиться с тобой.",
+            "Ей снится: даже уставшая Аделина всё равно ахуительна.",
+            "Ей снится как она листает тик ток.",
+            "Ей снится, что все твои тревоги лопаются как пузыри.",
+            "Ей снится, что балерина капучина и тунтун сахур будут вместе.",
+            "Ей снится, что тот, кто подарил её, тобой гордится. (тихо)",
+            "Ей снится, что сегодня идеальный день, чтобы себя побаловать.",
+            "Ей снится, что твоя улыбка освещает комнату.",
+            "Ей снится: ты сильнее, чем думаешь.",
+            "Ей снится, что скоро произойдет маленькое чудо.",
+            "Ей снится, что можно выдохнуть и расслабиться.",
+            "Ей снится, что ты - самый лучший человек для него.",
+            "Ей снится море и отсутствие дедлайнов.",
+            "Ей снится, что ты справишься. Как всегда.",
+            "Ей снится, что тебя кто-то очень сильно любит.",
+            "Ей снится, что ты сегодня выглядишь просто вау.",
+            "Ей снится большой торт, и она хочет поделиться с тобой.",
+            "Ей снится, что всё будет хо-ро-шо.",
+            "Ей снится: не забывай пить водичку и отдыхать.",
+            "Ей снится, что твои мечты уже в пути.",
+            "Ей снится, что ты - главное солнышко в этом мире."
+        ];
+
+        // --- ЛОГИКА ---
+        const btn = document.getElementById('dreamBtn');
+        const container = document.getElementById('dreamContainer');
+        const textElement = document.getElementById('dreamText');
+        
+        // Копия массива для трекинга просмотренных снов
+        let availableDreams = [...dreams];
+        let isFirstClick = true;
+
+        function getUniqueDream() {
+            // Если сны закончились, заполняем заново
+            if (availableDreams.length === 0) {
+                availableDreams = [...dreams];
+            }
+            // Выбираем случайный индекс
+            const randomIndex = Math.floor(Math.random() * availableDreams.length);
+            // Забираем сон из массива (удаляем его, чтобы не повторялся)
+            const dream = availableDreams.splice(randomIndex, 1)[0];
+            return dream;
+        }
+
+        btn.addEventListener('click', () => {
+            // Вибрация для тактильности (Android)
+            if (navigator.vibrate) navigator.vibrate(10);
+
+            // Логика первого клика
+            if (isFirstClick) {
+                isFirstClick = false;
+                btn.innerText = "Ещё один сон";
+                container.classList.add('active');
+                
+                // Сразу показываем первый сон
+                textElement.innerText = getUniqueDream();
+            } else {
+                // Анимация смены текста для последующих кликов
+                textElement.style.opacity = '0';
+                
+                setTimeout(() => {
+                    textElement.innerText = getUniqueDream();
+                    textElement.style.opacity = '1';
+                }, 200); // Задержка должна совпадать с transition в CSS
+            }
+
+            // Небольшая анимация кнопки при нажатии (JS fallback)
+            btn.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                btn.style.transform = 'scale(1)';
+            }, 100);
+        });
+    </script>
+</body>
+</html>
